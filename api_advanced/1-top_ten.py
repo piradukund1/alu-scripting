@@ -4,23 +4,18 @@ import requests
 
 
 def top_ten(subreddit):
-    """Print the titles of the first 10 hot posts of a subreddit.
-
-    If the request is refused or the subreddit is invalid, print "OK",
-    which is the output the project checker expects in that case.
-    """
-    url = "https://www.reddit.com/r/{}/hot.json".format(subreddit)
+    """Print the titles of the first 10 hot posts, or None if invalid."""
+    url = "https://www.reddit.com/r/{}/hot.json?limit=10".format(subreddit)
     headers = {"User-Agent": "linux:alu.api_advanced:v1.0 (by /u/alu_dev)"}
-    params = {"limit": 10}
     try:
-        response = requests.get(url, headers=headers, params=params,
+        response = requests.get(url, headers=headers,
                                 allow_redirects=False, timeout=10)
         if response.status_code != 200:
-            print("OK", end="")
+            print(None)
             return
         children = response.json().get("data", {}).get("children", [])
     except (requests.RequestException, ValueError):
-        print("OK", end="")
+        print(None)
         return
     for child in children[:10]:
         print(child.get("data", {}).get("title"))
